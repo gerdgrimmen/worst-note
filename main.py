@@ -8,7 +8,20 @@ api_data = {
     "notes": {},
 }
 
+filename = "api_data.json"
+
 PORT = 5000
+
+def write_data():
+    with open(filename, "w") as data_file:
+        data_file.write(json.dumps(api_data))
+
+def initial_persistence_setup():
+    if os.path.isfile(filename):
+        with open(filename, "r") as data_file:
+            return json.loads(data_file.read())
+    else:
+        write_data()
 
 class API():
     def __init__(self):
@@ -60,6 +73,7 @@ def post_tag(body):
         return {"message": "invalid entry"}
     next_id = len(api_data["tags"].keys())
     api_data["tags"][next_id] = body["text"]
+    write_data()
     return {"id": str(next_id)}
 
 @api.get("/notes")
@@ -77,6 +91,7 @@ def post_note(body):
         return {"message": "invalid entry"}
     next_id = len(api_data["notes"].keys())
     api_data["notes"][next_id] = body["text"]
+    write_data()
     return {"id": str(next_id)}
 
 @api.delete("/notes")
@@ -88,6 +103,7 @@ def delete_note(body):
     if int(body["id"]) in api_data["notes"].keys():
         api_data["notes"].pop(int(body["id"]))
         print("deleting")
+        write_data()
         return {"message": "deleted"}
     return {"message": "not found"}
 
@@ -155,6 +171,8 @@ if __name__ == "__main__":
                 data = self.rfile.read(data_len).decode()
                 self.call_api("DELETE", path, json.loads(data))
 
+    api_data = initial_persistence_setup()
+    print(api_data)
     httpd = HTTPServer(('', PORT), ApiRequestHandler)
     print(f"Application started at http://127.0.0.1:{PORT}/")
     httpd.serve_forever()
