@@ -58,6 +58,10 @@ def index(_):
 def get_help(args):
     return {"help": "help"}
 
+@api.get("/worst")
+def get_worse(args):
+    return "<html><body><h1>Frontend</h1></body></html>"
+
 @api.get("/tags")
 def get_tags(args):
     if "path_id" in args.keys():
@@ -117,7 +121,13 @@ if __name__ == "__main__":
                     result = api.routing[method][path](args)
                     self.send_response(200)
                     self.end_headers()
-                    self.wfile.write(json.dumps(result, indent=4).encode())
+                    if type(result) is dict:
+                        self.wfile.write(json.dumps(result, indent=4).encode())
+                    if type(result) is str:
+                        self.wfile.write(result.encode())
+                    else:
+                        self.wfile.write(json.dumps(result, indent=4).encode())
+                    
                 except Exception as e:
                     self.send_response(500, "Server Error")
                     self.end_headers()
