@@ -36,7 +36,10 @@ Contributors names and contact info
 ex. Gerd Grimmen (F.KU)
 
 ## Version History
-
+* 0.2
+    * Added Support for pictures
+    * Endpoint /images takes an image and saves it
+      * bugfix: initial_persistence_setup() would not return a value when api_data.json file non-existent
 * 0.1
     * Nothing here to see
 

@@ -32,6 +32,7 @@ def initial_persistence_setup():
             return json.loads(data_file.read())
     else:
         write_data()
+        return {"tags": {}, "notes": {}, "images": {}}        
 
 class API():
     def __init__(self):
@@ -65,8 +66,8 @@ def index(_):
     return { 
         "name": "Rest API for simple note taking",
         "summary": "",
-        "endpoints": [ "/tags", "/notes", "/help" ],
-        "version": "0.1.0"
+        "endpoints": [ "/tags", "/notes","/images" "/help" ],
+        "version": "0.2.0"
     }
 
 @api.get("/help")
@@ -115,10 +116,13 @@ def post_note(body):
 
 @api.put("/images")
 def post_image(body):
-    with open("uploaded_image.png", "wb") as uploaded_file:
+    next_id = len(api_data["images"].keys())
+    uploaded_image_name = "uploaded_image_" + str(next_id) + ".png"
+    with open(uploaded_image_name, "wb") as uploaded_file:
         newFileByteArray = bytearray(body)
         uploaded_file.write(newFileByteArray)
-    return {"id": 0}
+    api_data["images"][next_id] = uploaded_image_name
+    return {"id": str(next_id)}
 
 @api.delete("/notes")
 def delete_note(body):
@@ -144,8 +148,6 @@ if __name__ == "__main__":
                     if type(result) is dict:
                         self.wfile.write(json.dumps(result, indent=4).encode())
                     elif type(result) is str:
-                        self.wfile.write(result.encode())
-                    elif type(result) is bytes:
                         self.wfile.write(result.encode())
                     
                 except Exception as e:
