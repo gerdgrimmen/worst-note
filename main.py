@@ -10,11 +10,20 @@ api_data = {
 
 filename = "api_data.json"
 
+index_content = "Nothing Here!"
+
 PORT = 5000
 
 def write_data():
     with open(filename, "w") as data_file:
         data_file.write(json.dumps(api_data))
+
+def load_index():
+    if os.path.isfile("index.html"):
+        with open("index.html", "r") as index_file:
+            return index_file.read()
+    return index_content
+
 
 def initial_persistence_setup():
     if os.path.isfile(filename):
@@ -60,7 +69,7 @@ def get_help(args):
 
 @api.get("/worst")
 def get_worse(args):
-    return "<html><body><h1>Frontend</h1></body></html>"
+    return index_content
 
 @api.get("/tags")
 def get_tags(args):
@@ -123,10 +132,8 @@ if __name__ == "__main__":
                     self.end_headers()
                     if type(result) is dict:
                         self.wfile.write(json.dumps(result, indent=4).encode())
-                    if type(result) is str:
+                    elif type(result) is str:
                         self.wfile.write(result.encode())
-                    else:
-                        self.wfile.write(json.dumps(result, indent=4).encode())
                     
                 except Exception as e:
                     self.send_response(500, "Server Error")
@@ -182,6 +189,7 @@ if __name__ == "__main__":
                 self.call_api("DELETE", path, json.loads(data))
 
     api_data = initial_persistence_setup()
+    index_content = load_index()
     httpd = HTTPServer(('', PORT), ApiRequestHandler)
     print(f"Application started at http://127.0.0.1:{PORT}/")
     httpd.serve_forever()
