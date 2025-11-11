@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+body {background-color: powderblue;}
+#taglist {background-color: cyan; min-width: 50px; min-height: 50px;}
+#notelist {background-color: yellow; min-width: 50px; min-height: 50px;}
+        </style>
+    </head>
+    <body>
+        <!-- ids 
+        newnote_input newnote_button newtag_input newtag_button taglist notelist
+        -->
+        <div>
+            <!-- input new note -->
+            <label for="newnote">New Note:</label><br>
+            <textarea name="newnote" cols="40" rows="5" id="newnote_input"></textarea>
+            <!-- button new note -->
+            <input type="button" value="Add Note" id="newnote_button"/>
+        </div>
+        <div>
+            <!-- input new tag -->
+            <label for="newtag">New Tag:</label><br>
+            <input type="text" name="name" size="20" id="newtag_input"/>
+            <!-- button tag note -->
+            <input type="button" value="Add Tag" id="newtag_button"/>
+        </div>
+        <!-- tag list -->
+        <div id="taglist"></div>
+        <!-- note list -->
+        <div id="notelist"></div>
+
+        <script type="text/javascript">
+            console.log("yay")
+            var home_address = "http://127.0.0.1"
+            var port = "5000"
+            const worst_headers = new Headers();
+            worst_headers.append("Content-Type", "application/json");
+            var address_notes = home_address+":"+port+"/notes"
+            var address_tags = home_address+":"+port+"/tags"
+            var newnote_input = document.getElementById("newnote_input");
+            var newnote_button = document.getElementById("newnote_button");
+            var newtag_input = document.getElementById("newtag_input");
+            var newtag_button = document.getElementById("newtag_button");
+            var taglist = document.getElementById("taglist");
+            var notelist = document.getElementById("notelist");
+            
+            function reset_notelist(){
+                notelist.innerText = "";
+            };
+ 
+            function reset_taglist(){
+                taglist.innerText = "";
+            };
+ 
+            function layout_notes_data(data_json){
+                reset_notelist();
+                Object.keys(data_json["notes"]).forEach(function(key) {
+                    console.log(key + ": " + data_json["notes"][key]);
+                });
+                notelist.innerText = JSON.stringify(data_json);
+            };
+ 
+            function layout_tags_data(data_json){
+                reset_taglist();
+                 Object.keys(data_json["tags"]).forEach(function(key) {
+                    console.log(key + ": " + data_json["tags"][key]);
+                });
+                taglist.innerText = JSON.stringify(data_json);
+            };
+ 
+            async function update_notelist(){
+                // get
+                fetch(address_notes)
+                .then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    // console.log(data);
+                    layout_notes_data(data);
+                });
+            };
+            async function update_taglist(){
+                // get
+                fetch(address_tags)
+                .then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    // console.log(data);
+                    layout_tags_data(data);
+                });
+            };
+ 
+            async function add_note(){
+                // post
+                var post_body = {"text": newnote_input.value};
+                console.log(JSON.stringify(post_body));
+                fetch(address_notes, {method: "POST", headers: worst_headers, body: JSON.stringify(post_body) })
+                .then(function(response) {
+                    return response.json();
+                }).then(function(){
+                    update_notelist();
+                });
+            };
+
+            async function add_tag(){
+                // post
+                var post_body = {"text": newtag_input.value};
+                fetch(address_tags, {method: "POST", headers: worst_headers, body: JSON.stringify(post_body) })
+                .then(function(response) {
+                    return response.json();
+                }).then(function(){
+                    update_taglist();
+                });
+            };
+
+            newnote_button.addEventListener("click", add_note);
+            newtag_button.addEventListener("click", add_tag);
+
+            update_notelist();
+            update_taglist();
+        </script>
+    </html>
+</body>
