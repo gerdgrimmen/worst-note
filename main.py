@@ -6,6 +6,7 @@ from urllib.parse import urlparse, parse_qs
 api_data = {
     "tags": {},
     "notes": {},
+    "images": {}
 }
 
 filename = "api_data.json"
@@ -31,10 +32,11 @@ def initial_persistence_setup():
             return json.loads(data_file.read())
     else:
         write_data()
+        return {"tags": {}, "notes": {}, "images": {}}        
 
 class API():
     def __init__(self):
-        self.routing = { "GET": { }, "POST": { } , "DELETE": { } }
+        self.routing = { "GET": { }, "POST": { } , "PUT": { } , "DELETE": { } }
     
     def get(self, path):
         def wrapper(fn):
@@ -44,6 +46,11 @@ class API():
     def post(self, path):
         def wrapper(fn):
             self.routing["POST"][path] = fn
+        return wrapper
+
+    def put(self, path):
+        def wrapper(fn):
+            self.routing["PUT"][path] = fn
         return wrapper
 
     def delete(self, path):
@@ -59,8 +66,8 @@ def index(_):
     return { 
         "name": "Rest API for simple note taking",
         "summary": "",
-        "endpoints": [ "/tags", "/notes", "/help" ],
-        "version": "0.1.0"
+        "endpoints": [ "/tags", "/notes","/images" "/help" ],
+        "version": "0.2.0"
     }
 
 @api.get("/help")
@@ -107,12 +114,20 @@ def post_note(body):
     write_data()
     return {"id": str(next_id)}
 
+@api.put("/images")
+def post_image(body):
+    next_id = len(api_data["images"].keys())
+    uploaded_image_name = "uploaded_image_" + str(next_id) + ".png"
+    with open(uploaded_image_name, "wb") as uploaded_file:
+        newFileByteArray = bytearray(body)
+        uploaded_file.write(newFileByteArray)
+    api_data["images"][next_id] = uploaded_image_name
+    return {"id": str(next_id)}
+
 @api.delete("/notes")
 def delete_note(body):
     if not "id" in body.keys():
         return {"message": "invalid am entry"}
-    print(body)
-    print(api_data["notes"].keys())
     if int(body["id"]) in api_data["notes"].keys():
         api_data["notes"].pop(int(body["id"]))
         print("deleting")
@@ -156,8 +171,7 @@ if __name__ == "__main__":
                     args["path_id"] = path_id
             for k in args.keys():
                 if len(args[k]) == 1:
-                    args[k] = args[k][0]
-            
+                    args[k] = args[k][0]            
             self.call_api("GET", path, args)
 
         def do_POST(self):
@@ -173,6 +187,20 @@ if __name__ == "__main__":
                 data_len = int(self.headers.get("content-length"))
                 data = self.rfile.read(data_len).decode()
                 self.call_api("POST", path, json.loads(data))
+        
+        def do_PUT(self):
+            parsed_url = urlparse(self.path)
+            path = parsed_url.path
+            if self.headers.get("content-type") != "image/png":
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "error": "posted data must be in an png image format"
+                }, indent=4).encode())
+            else:
+                data_len = int(self.headers.get("content-length"))
+                data = self.rfile.read(data_len)
+                self.call_api("PUT", path, data)
 
         def do_DELETE(self):
             parsed_url = urlparse(self.path)
