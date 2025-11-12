@@ -67,7 +67,7 @@ def index(_):
         "name": "Rest API for simple note taking",
         "summary": "",
         "endpoints": [ "/tags", "/notes","/images" "/help" ],
-        "version": "0.2.0"
+        "version": "0.2.1"
     }
 
 @api.get("/help")
@@ -92,12 +92,13 @@ def post_tag(body):
     if not "text" in body.keys():
         return {"message": "invalid entry"}
     next_id = len(api_data["tags"].keys())
-    api_data["tags"][next_id] = body["text"]
+    api_data["tags"][str(next_id)] = body["text"]
     write_data()
     return {"id": str(next_id)}
 
 @api.get("/notes")
 def get_notes(args):
+    print(api_data)
     if "path_id" in args.keys():
         if args["path_id"] in api_data["notes"].keys():
             return api_data["notes"][args["path_id"]]
@@ -110,7 +111,7 @@ def post_note(body):
     if not "text" in body.keys():
         return {"message": "invalid entry"}
     next_id = len(api_data["notes"].keys())
-    api_data["notes"][next_id] = body["text"]
+    api_data["notes"][str(next_id)] = body["text"]
     write_data()
     return {"id": str(next_id)}
 
@@ -121,7 +122,7 @@ def post_image(body):
     with open(uploaded_image_name, "wb") as uploaded_file:
         newFileByteArray = bytearray(body)
         uploaded_file.write(newFileByteArray)
-    api_data["images"][next_id] = uploaded_image_name
+    api_data["images"][str(next_id)] = uploaded_image_name
     return {"id": str(next_id)}
 
 @api.delete("/notes")
@@ -165,6 +166,7 @@ if __name__ == "__main__":
             args = parse_qs(parsed_url.query)
             if not path in api.routing["GET"]:
                 new_path, path_id = path.rsplit("/",1)
+                print(new_path, " ", path_id)
                 if new_path == "": new_path = "/"
                 if new_path in api.routing["GET"]: 
                     path = new_path
