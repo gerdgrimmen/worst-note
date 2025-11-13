@@ -1,0 +1,1 @@
+podman build -t worst/worst-note:0.2.1 -f ./Dockerfile/Dockerfile .
