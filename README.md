@@ -11,10 +11,16 @@ A minimal note taking frontend included in an rest api server
 
 ### Dependencies
 
+For the Service
+
 * import json
 * import os
 * from http.server import HTTPServer, BaseHTTPRequestHandler
 * from urllib.parse import urlparse, parse_qs
+
+For building a container image
+
+* docker build/podman build
 
 ### Installing
 
@@ -28,6 +34,22 @@ just run the command "python ./main.py"
 python ./main.py
 ```
 To use the API just take the examples from the ./curls.sh.
+
+### Building conainer image
+
+You need docker/podman or comparable software installed to build the container file yourself.
+
+```
+chmod +x container_build.sh
+./conainer_build.sh 
+```
+
+### Running conainer
+
+This is a podman example use your equivalent if you run a different software solution 
+```
+podman run -d --name worsty -p 5000:5000 worst/worst-note:0.2.1
+```
 
 ## Authors
 
