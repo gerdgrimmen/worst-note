@@ -67,7 +67,7 @@ def index(_):
         "name": "Rest API for simple note taking",
         "summary": "",
         "endpoints": [ "/tags", "/notes","/images" "/help" ],
-        "version": "0.2.1"
+        "version": "0.2.2"
     }
 
 @api.get("/help")
@@ -149,6 +149,8 @@ if __name__ == "__main__":
                     if type(result) is dict:
                         self.wfile.write(json.dumps(result, indent=4).encode())
                     elif type(result) is str:
+                        self.wfile.write(result.encode())
+                    elif type(result) is bytes:
                         self.wfile.write(result.encode())
                     
                 except Exception as e:

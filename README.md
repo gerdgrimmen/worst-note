@@ -58,6 +58,8 @@ Contributors names and contact info
 ex. Gerd Grimmen (F.KU)
 
 ## Version History
+* 0.2.2
+    * fix requesting images
 * 0.2.1
     * fix missmatch in stored keys per object int/str
 * 0.2
