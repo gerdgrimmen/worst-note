@@ -48,7 +48,7 @@ chmod +x container_build.sh
 
 This is a podman example use your equivalent if you run a different software solution 
 ```
-podman run -d --name worsty -p 5000:5000 worst/worst-note:0.2.1
+podman run -d --name worsty -p 5000:5000 worst/worst-note:0.3.0
 ```
 
 ## Authors
@@ -58,6 +58,9 @@ Contributors names and contact info
 ex. Gerd Grimmen (F.KU)
 
 ## Version History
+* 0.3.0
+    * added /images get endpoint to give a message response
+    * changed url in index.html to localhost from 127.0.0.1 because it helped with "Access-Control-Allow-Origin"
 * 0.2.2
     * fix requesting images
 * 0.2.1

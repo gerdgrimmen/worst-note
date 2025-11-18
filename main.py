@@ -67,7 +67,7 @@ def index(_):
         "name": "Rest API for simple note taking",
         "summary": "",
         "endpoints": [ "/tags", "/notes","/images" "/help" ],
-        "version": "0.2.2"
+        "version": "0.3.0"
     }
 
 @api.get("/help")
@@ -98,7 +98,6 @@ def post_tag(body):
 
 @api.get("/notes")
 def get_notes(args):
-    print(api_data)
     if "path_id" in args.keys():
         if args["path_id"] in api_data["notes"].keys():
             return api_data["notes"][args["path_id"]]
@@ -115,16 +114,6 @@ def post_note(body):
     write_data()
     return {"id": str(next_id)}
 
-@api.put("/images")
-def post_image(body):
-    next_id = len(api_data["images"].keys())
-    uploaded_image_name = "uploaded_image_" + str(next_id) + ".png"
-    with open(uploaded_image_name, "wb") as uploaded_file:
-        newFileByteArray = bytearray(body)
-        uploaded_file.write(newFileByteArray)
-    api_data["images"][str(next_id)] = uploaded_image_name
-    return {"id": str(next_id)}
-
 @api.delete("/notes")
 def delete_note(body):
     if not "id" in body.keys():
@@ -135,6 +124,31 @@ def delete_note(body):
         write_data()
         return {"message": "deleted"}
     return {"message": "not found"}
+
+@api.get("/images")
+def get_image(args):
+    print(api_data)
+    if "path_id" in args.keys():
+        if args["path_id"] in api_data["images"].keys():
+            file_path = api_data["images"][args["path_id"]]
+            print(file_path)
+            with open(file_path, "rb") as image_file:
+                print(type(image_file))
+                return image_file.read()
+        else:
+            return {"message": "not found"}
+    return {"message": "not found - end"}
+
+@api.put("/images")
+def post_image(body):
+    next_id = len(api_data["images"].keys())
+    uploaded_image_name = "uploaded_image_" + str(next_id) + ".png"
+    with open(uploaded_image_name, "wb") as uploaded_file:
+        newFileByteArray = bytearray(body)
+        uploaded_file.write(newFileByteArray)
+    api_data["images"][str(next_id)] = uploaded_image_name
+    write_data()
+    return {"id": str(next_id)}
 
 if __name__ == "__main__":
     class ApiRequestHandler(BaseHTTPRequestHandler):
@@ -151,7 +165,7 @@ if __name__ == "__main__":
                     elif type(result) is str:
                         self.wfile.write(result.encode())
                     elif type(result) is bytes:
-                        self.wfile.write(result.encode())
+                        self.wfile.write(result)
                     
                 except Exception as e:
                     self.send_response(500, "Server Error")
