@@ -9,7 +9,7 @@ body {background-color: powderblue;}
     </head>
     <body>
         <!-- ids 
-        newnote_input newnote_button newtag_input newtag_button taglist notelist
+        newnote_input newnote_button newtag_input newtag_button taglist notelist output newimage_input newimage_button 
         -->
         <div>
             <!-- input new note -->
@@ -21,10 +21,20 @@ body {background-color: powderblue;}
         <div>
             <!-- input new tag -->
             <label for="newtag">New Tag:</label><br>
-            <input type="text" name="name" size="20" id="newtag_input"/>
-            <!-- button tag note -->
+            <input type="text" name="newtag" size="20" id="newtag_input"/>
+            <!-- button new tag -->
             <input type="button" value="Add Tag" id="newtag_button"/>
         </div>
+        <div>
+            <!-- input new image -->
+            <label for="newimage">New Image:</label><br>
+            <input type="file" accept="image/*" name="newimage" id="newimage_input"/>
+            <!-- button new image -->
+            <input type="button" value="Add Tag" id="newimage_button"/>
+        </div>
+
+        <!-- last uploaded image -->
+        <img id="image_preview">
         <!-- tag list -->
         <div id="taglist"></div>
         <!-- note list -->
@@ -32,12 +42,17 @@ body {background-color: powderblue;}
 
         <script type="text/javascript">
             console.log("yay")
-            var home_address = "http://127.0.0.1"
+            var home_address = "http://localhost"
             var port = "5000"
             const worst_headers = new Headers();
             worst_headers.append("Content-Type", "application/json");
+            const worst_image_headers = new Headers();
+            worst_image_headers.append("Content-Type", "image/png");
+            
             var address_notes = home_address+":"+port+"/notes"
             var address_tags = home_address+":"+port+"/tags"
+            var address_images = home_address+":"+port+"/images"
+
             var newnote_input = document.getElementById("newnote_input");
             var newnote_button = document.getElementById("newnote_button");
             var newtag_input = document.getElementById("newtag_input");
@@ -45,6 +60,11 @@ body {background-color: powderblue;}
             var taglist = document.getElementById("taglist");
             var notelist = document.getElementById("notelist");
             
+            var newimage_input = document.getElementById("newimage_input");
+            var newimage_button = document.getElementById("newimage_button");
+            var image_preview = document.getElementById('image_preview');
+            var image_upload_buffer = null;
+
             function reset_notelist(){
                 notelist.innerText = "";
             };
@@ -113,8 +133,29 @@ body {background-color: powderblue;}
                 });
             };
 
+            async function add_image(){
+                // put
+                fetch(address_images, {method: "PUT", headers: worst_image_headers, body: image_upload_buffer})
+                .then(function(response) {
+                    return response.json();
+                }).then(function(){
+                    update_taglist();
+                });
+            };
+
+            async function upload_image(event){
+                image_preview.src = URL.createObjectURL(event.target.files[0]);
+                image_upload_buffer = await fetch(image_preview.src)
+                    .then(r => r.blob())
+                    .then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }));
+                image_preview.onload = function() { URL.revokeObjectURL(image_preview.src); };
+            };
+
             newnote_button.addEventListener("click", add_note);
             newtag_button.addEventListener("click", add_tag);
+            newimage_button.addEventListener("click", add_image);
+
+            newimage_input.addEventListener("change", upload_image);
 
             update_notelist();
             update_taglist();
