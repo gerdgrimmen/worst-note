@@ -72,10 +72,6 @@ ex. Gerd Grimmen (F.KU)
 * 0.1
     * Nothing here to see
 
-## License
-
-The Unlicense. Feel free to use or change it how you need.
-
 ## Acknowledgments
 
 * https://github.com/ynsrc/python-simple-rest-api/tree/main
