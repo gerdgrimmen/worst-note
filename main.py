@@ -160,6 +160,11 @@ def get_fullnote(args):
 def post_fullnote(args):
     pass
 
+# maybe am too lazy to implement method UPDATE right now
+@api.post("/fullnote_update")
+def post_fullnote(args):
+    pass
+
 
 
 if __name__ == "__main__":
