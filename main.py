@@ -150,6 +150,18 @@ def post_image(body):
     write_data()
     return {"id": str(next_id)}
 
+# fullnote structure {id, notes/images-list, tagslist}
+
+@api.get("/fullnote")
+def get_fullnote(args):
+    pass
+
+@api.post("/fullnote")
+def post_fullnote(args):
+    pass
+
+
+
 if __name__ == "__main__":
     class ApiRequestHandler(BaseHTTPRequestHandler):
         global api
