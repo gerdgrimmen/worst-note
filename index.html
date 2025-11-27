@@ -9,7 +9,8 @@ body {background-color: powderblue;}
     </head>
     <body>
         <!-- ids 
-        newnote_input newnote_button newtag_input newtag_button taglist notelist output newimage_input newimage_button 
+        newnote_input newnote_button newtag_input newtag_button taglist notelist output newimage_input newimage_button image_preview
+        fullnote_output
         -->
         <div>
             <!-- input new note -->
@@ -39,6 +40,11 @@ body {background-color: powderblue;}
         <div id="taglist"></div>
         <!-- note list -->
         <div id="notelist"></div>
+
+        <!-- fullnote -->
+        <div id="fullnote_output"></div>
+
+
 
         <script type="text/javascript">
             console.log("yay")
@@ -79,6 +85,7 @@ body {background-color: powderblue;}
                     console.log(key + ": " + data_json["notes"][key]);
                 });
                 notelist.innerText = JSON.stringify(data_json);
+                // for each note - clickable -> fullnote {"notes".append()}
             };
  
             function layout_tags_data(data_json){
@@ -87,6 +94,7 @@ body {background-color: powderblue;}
                     console.log(key + ": " + data_json["tags"][key]);
                 });
                 taglist.innerText = JSON.stringify(data_json);
+                // for each tag - clickable -> fullnote {"tags".append()}
             };
  
             async function update_notelist(){
