@@ -172,22 +172,15 @@ def post_fullnotes(args):
     write_data()
     return {"id": str(next_id)}
 
-# maybe am too lazy to implement method UPDATE right now
-# combine these function into an update
 @api.post("/fullnotes_update")
-def post_fullnotes(args):
-    if "path_id" in args.keys():
-        if args["path_id"] in api_data["fullnotes"].keys():
-            return api_data["fullnotes"][args["path_id"]]
+def post_fullnotes(body):
+    if "id" in body.keys():
+        if body["id"] in api_data["fullnotes"].keys():
+            api_data["fullnotes"][body["id"]] = body
+            return {"message: fullnote updated"}
         else:
-            return {"message": "not found"}
-    return {"fullnotes": api_data["fullnotes"]}
-    if not "text" in body.keys():
-        return {"message": "invalid entry"}
-    next_id = len(api_data["fullnotes"].keys())
-    api_data["fullnotes"][str(next_id)] = body["text"]
-    write_data()
-    return {"id": str(next_id)}
+            return {"message": "id not found"}
+    return {"message": "id not given"}
 
 
 
