@@ -6,7 +6,8 @@ from urllib.parse import urlparse, parse_qs
 api_data = {
     "tags": {},
     "notes": {},
-    "images": {}
+    "images": {},
+    "fullnotes": {}
 }
 
 filename = "api_data.json"
@@ -151,19 +152,43 @@ def post_image(body):
     return {"id": str(next_id)}
 
 # fullnote structure {id, notes/images-list, tagslist}
+# have to get the /<id> endpoint from worst-auth so i can separate this endpoints functions
+@api.get("/fullnotes")
+def get_fullnotes(args):
+        if "path_id" in args.keys():
+        if args["path_id"] in api_data["fullnotes"].keys():
+            return api_data["fullnotes"][args["path_id"]]
+        else:
+            return {"message": "not found"}
+    return {"fullnotes": api_data["fullnotes"]}
 
-@api.get("/fullnote")
-def get_fullnote(args):
-    pass
-
-@api.post("/fullnote")
-def post_fullnote(args):
-    pass
+# have to get the /<id> endpoint from worst-auth so i can separate this endpoints functions
+@api.post("/fullnotes")
+def post_fullnotes(args):
+    if not "text" in body.keys():
+        return {"message": "invalid entry"}
+    next_id = len(api_data["fullnotes"].keys())
+    api_data["fullnotes"][str(next_id)] = body["text"]
+    write_data()
+    return {"id": str(next_id)}
 
 # maybe am too lazy to implement method UPDATE right now
-@api.post("/fullnote_update")
-def post_fullnote(args):
-    pass
+# combine these function into an update
+@api.post("/fullnotes_update")
+def post_fullnotes(args):
+    if "path_id" in args.keys():
+        if args["path_id"] in api_data["fullnotes"].keys():
+            return api_data["fullnotes"][args["path_id"]]
+        else:
+            return {"message": "not found"}
+    return {"fullnotes": api_data["fullnotes"]}
+    if not "text" in body.keys():
+        return {"message": "invalid entry"}
+    next_id = len(api_data["fullnotes"].keys())
+    api_data["fullnotes"][str(next_id)] = body["text"]
+    write_data()
+    return {"id": str(next_id)}
+
 
 
 
