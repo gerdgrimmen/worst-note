@@ -155,7 +155,7 @@ def post_image(body):
 # have to get the /<id> endpoint from worst-auth so i can separate this endpoints functions
 @api.get("/fullnotes")
 def get_fullnotes(args):
-        if "path_id" in args.keys():
+    if "path_id" in args.keys():
         if args["path_id"] in api_data["fullnotes"].keys():
             return api_data["fullnotes"][args["path_id"]]
         else:
