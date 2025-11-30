@@ -71,6 +71,8 @@ body {background-color: powderblue;}
             var image_preview = document.getElementById('image_preview');
             var image_upload_buffer = null;
 
+            var data_structure = {"notes": {}, "tags": {}, "images": {}, "fullnotes": {}};
+
             function reset_notelist(){
                 notelist.innerText = "";
             };

@@ -33,7 +33,7 @@ def initial_persistence_setup():
             return json.loads(data_file.read())
     else:
         write_data()
-        return {"tags": {}, "notes": {}, "images": {}}        
+        return {"tags": {}, "notes": {}, "images": {}, "fullnotes": {}}        
 
 class API():
     def __init__(self):
