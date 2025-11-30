@@ -94,8 +94,13 @@ body {background-color: powderblue;}
                 reset_taglist();
                  Object.keys(data_json["tags"]).forEach(function(key) {
                     console.log(key + ": " + data_json["tags"][key]);
+                    var new_div = document.createElement("div");
+                    new_div.innerText = key + ": " + data_json["tags"][key];
+                    new_div.className = "tag";
+                    new_div.addEventListener("click", show_element_contents);
+                    taglist.appendChild(new_div);
                 });
-                taglist.innerText = JSON.stringify(data_json);
+                // taglist.innerText = JSON.stringify(data_json);
                 // for each tag - clickable -> fullnote {"tags".append()}
             };
  
@@ -160,6 +165,10 @@ body {background-color: powderblue;}
                     .then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/png" }));
                 image_preview.onload = function() { URL.revokeObjectURL(image_preview.src); };
             };
+
+            function show_element_contents(e){
+                console.log(e.originalTarget.innerText);
+            }
 
             newnote_button.addEventListener("click", add_note);
             newtag_button.addEventListener("click", add_tag);
