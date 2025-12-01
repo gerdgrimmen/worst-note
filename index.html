@@ -12,28 +12,32 @@ body {background-color: powderblue;}
         newnote_input newnote_button newtag_input newtag_button taglist notelist output newimage_input newimage_button image_preview
         fullnote_output
         -->
-        <div>
-            <!-- input new note -->
-            <label for="newnote">New Note:</label><br>
-            <textarea name="newnote" cols="40" rows="5" id="newnote_input"></textarea>
-            <!-- button new note -->
-            <input type="button" value="Add Note" id="newnote_button"/>
+        <div style="display: inline-block;min-height: 250px;background-color: bisque;">            
+            <div>
+                <!-- input new note -->
+                <label for="newnote">New Note:</label><br>
+                <textarea name="newnote" cols="40" rows="5" id="newnote_input"></textarea>
+                <!-- button new note -->
+                <input type="button" value="Add Note" id="newnote_button"/>
+            </div>
+            <div>
+                <!-- input new tag -->
+                <label for="newtag">New Tag:</label><br>
+                <input type="text" name="newtag" size="20" id="newtag_input"/>
+                <!-- button new tag -->
+                <input type="button" value="Add Tag" id="newtag_button"/>
+            </div>
+            <div>
+                <!-- input new image -->
+                <label for="newimage">New Image:</label><br>
+                <input type="file" accept="image/*" name="newimage" id="newimage_input"/>
+                <!-- button new image -->
+                <input type="button" value="Add Tag" id="newimage_button"/>
+            </div>
         </div>
-        <div>
-            <!-- input new tag -->
-            <label for="newtag">New Tag:</label><br>
-            <input type="text" name="newtag" size="20" id="newtag_input"/>
-            <!-- button new tag -->
-            <input type="button" value="Add Tag" id="newtag_button"/>
+        <div style="display: inline-block;min-width: 200px;background-color: blueviolet;min-height: 250px;vertical-align: top;">
+            
         </div>
-        <div>
-            <!-- input new image -->
-            <label for="newimage">New Image:</label><br>
-            <input type="file" accept="image/*" name="newimage" id="newimage_input"/>
-            <!-- button new image -->
-            <input type="button" value="Add Tag" id="newimage_button"/>
-        </div>
-
         <!-- last uploaded image -->
         <img id="image_preview">
         <!-- tag list -->
@@ -87,25 +91,27 @@ body {background-color: powderblue;}
                     console.log(key + ": " + data_json["notes"][key]);
                     var new_div = document.createElement("div");
                     new_div.innerText = key + ": " + data_json["notes"][key];
+                    new_div["data-key"] = key;
+                    new_div["data-type"] = "note";
                     new_div.className = "note";
                     new_div.addEventListener("click", show_element_contents);
                     notelist.appendChild(new_div);
                 });
-                // notelist.innerText = JSON.stringify(data_json);
             };
- 
+            
             function layout_tags_data(data_json){
                 reset_taglist();
-                 Object.keys(data_json["tags"]).forEach(function(key) {
+                Object.keys(data_json["tags"]).forEach(function(key) {
                     console.log(key + ": " + data_json["tags"][key]);
                     var new_div = document.createElement("div");
                     new_div.innerText = key + ": " + data_json["tags"][key];
-                    new_div.data = key;
-                    new_div.className = "tag";
+                    new_div["data-key"] = key;
+                    new_div["data-type"] = "tag";
+                    new_div.classList.add("tag");
+                    // new_div.className = "";
                     new_div.addEventListener("click", show_element_contents);
                     taglist.appendChild(new_div);
                 });
-                // taglist.innerText = JSON.stringify(data_json);
             };
  
             async function update_notelist(){
@@ -140,7 +146,6 @@ body {background-color: powderblue;}
                     update_notelist();
                 });
             };
-
             async function add_tag(){
                 // post
                 var post_body = {"text": newtag_input.value};
@@ -171,8 +176,22 @@ body {background-color: powderblue;}
             };
 
             function show_element_contents(e){
-                // console.log(e.originalTarget.innerText);
                 console.log(e);
+                console.log(e.target["data-key"]);
+                console.log(e.target["data-type"]);
+            }
+            
+            function fullnote_placement(type, key){
+                switch(type){
+                    case "note":
+                        // codeblock
+                        break;
+                    case "tag":
+                        // codeblock
+                        break;
+                    default:
+                        // codeblock
+                }
             }
 
             newnote_button.addEventListener("click", add_note);
