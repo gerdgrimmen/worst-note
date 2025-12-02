@@ -14,6 +14,8 @@ filename = "api_data.json"
 
 index_content = "Nothing Here!"
 
+rewrite_content = "Nothing Here! rewrite"
+
 PORT = 5000
 
 def write_data():
@@ -25,6 +27,12 @@ def load_index():
         with open("index.html", "r") as index_file:
             return index_file.read()
     return index_content
+
+def load_rewrite():
+    if os.path.isfile("rewrite.html"):
+        with open("rewrite.html", "r") as rewrite_file:
+            return rewrite_file.read()
+    return rewrite_content
 
 
 def initial_persistence_setup():
@@ -78,6 +86,10 @@ def get_help(args):
 @api.get("/worst")
 def get_worse(args):
     return index_content
+
+@api.get("/rewrite")
+def get_worse(args):
+    return rewrite_content
 
 @api.get("/tags")
 def get_tags(args):
@@ -271,6 +283,7 @@ if __name__ == "__main__":
 
     api_data = initial_persistence_setup()
     index_content = load_index()
+    rewrite_content = load_rewrite()
     httpd = HTTPServer(('', PORT), ApiRequestHandler)
     print(f"Application started at http://127.0.0.1:{PORT}/")
     httpd.serve_forever()
