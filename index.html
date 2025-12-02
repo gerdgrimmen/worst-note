@@ -36,7 +36,7 @@ body {background-color: powderblue;}
             </div>
         </div>
         <div style="display: inline-block;min-width: 300px;background-color: blueviolet;min-height: 250px;vertical-align: top;">
-            <div id="fullnote_note">
+            <div id="fullnote_notes">
 
             </div>
             <div id="fullnote_tag">
@@ -80,7 +80,7 @@ body {background-color: powderblue;}
             var image_preview = document.getElementById('image_preview');
             var image_upload_buffer = null;
 
-            var fullnote_note = document.getElementById("fullnote_note");
+            var fullnote_notes = document.getElementById("fullnote_notes");
             var fullnote_tag = document.getElementById("fullnote_tag");
 
             var data_structure = {"notes": {}, "tags": {}, "images": {}, "fullnotes": {}};
@@ -98,7 +98,6 @@ body {background-color: powderblue;}
                 Object.keys(data_json["notes"]).forEach(function(key) {
                     console.log(key + ": " + data_json["notes"][key]);
                     var new_div = document.createElement("div");
-                    // new_div.innerText = key + ": " + data_json["notes"][key];
                     new_div.innerText = data_json["notes"][key];
                     new_div["data-key"] = key;
                     new_div["data-type"] = "note";
@@ -113,12 +112,10 @@ body {background-color: powderblue;}
                 Object.keys(data_json["tags"]).forEach(function(key) {
                     console.log(key + ": " + data_json["tags"][key]);
                     var new_div = document.createElement("div");
-                    // new_div.innerText = key + ": " + data_json["tags"][key];
                     new_div.innerText = data_json["tags"][key];
                     new_div["data-key"] = key;
                     new_div["data-type"] = "tag";
                     new_div.classList.add("tag");
-                    // new_div.className = "";
                     new_div.addEventListener("click", show_element_contents);
                     taglist.appendChild(new_div);
                 });
@@ -130,7 +127,6 @@ body {background-color: powderblue;}
                 .then(function(response) {
                     return response.json();
                 }).then(function(data) {
-                    // console.log(data);
                     layout_notes_data(data);
                 });
             };
@@ -140,7 +136,6 @@ body {background-color: powderblue;}
                 .then(function(response) {
                     return response.json();
                 }).then(function(data) {
-                    // console.log(data);
                     layout_tags_data(data);
                 });
             };
@@ -195,13 +190,22 @@ body {background-color: powderblue;}
             function fullnote_placement(type, key, value){
                 switch(type){
                     case "note":
-                        // codeblock
-                        fullnote_note.innerText = value
-                        fullnote_note["data-key"] = key
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("note");
+                        new_div.innerText = value;
+                        fullnote_notes.appendChild(new_div);
+                        fullnote_notes["data-key-list"].push(key);
+                        console.log(fullnote_notes);
+                        break;
+                    case "image":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("image");
+                        new_div.innerText = value;
+                        fullnote_notes.appendChild(new_div);
+                        fullnote_notes["data-key-list"].push(key);
+                        console.log(fullnote_notes);
                         break;
                     case "tag":
-                        // codeblock
-                        // const escaped = escapeHTMLPolicy.createHTML(value);
                         if (fullnote_tag["data-key-list"].includes(key)){
                             break;
                         }
@@ -213,7 +217,7 @@ body {background-color: powderblue;}
                         console.log(fullnote_tag);
                         break;
                     default:
-                        // codeblock
+                        break;
                 }
             }
 
@@ -222,6 +226,8 @@ body {background-color: powderblue;}
             newimage_button.addEventListener("click", add_image);
 
             newimage_input.addEventListener("change", upload_image);
+            fullnote_notes["data-key-list"] = [];
+            console.log(fullnote_notes["data-key-list"]);
             fullnote_tag["data-key-list"] = [];
             console.log(fullnote_tag["data-key-list"]);
             update_notelist();
