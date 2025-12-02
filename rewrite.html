@@ -67,11 +67,19 @@ body {background-color: powderblue;}
             }
 
             function update_notes(){
-                return
+                var count = 0;
+                data_structure["notes"].forEach(function(element){
+                    fullnote_placement("note", count, element);
+                    count = count + 1;
+                });
             }
 
             function update_tags(){
-                return
+                var count = 0;
+                data_structure["tags"].forEach(function(element){
+                    fullnote_placement("tag", count, element);
+                    count = count + 1;
+                });
             }
 
             function add_title(){
