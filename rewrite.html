@@ -5,24 +5,33 @@
 body {background-color: powderblue;}
 #taglist {background-color: cyan; min-width: 50px; min-height: 50px;}
 #notelist {background-color: yellow; min-width: 50px; min-height: 50px;}
-.tag {background-color: red; margin: 5px;}
-.note {background-color: blue; margin: 5px;}
+
+#wrapper { display: grid; grid-template-columns: 5% 70% auto;}
+#controls {position: absolute; bottom: 0px; left: 0px;}
         </style>
     </head>
     <body>
-        <!-- fullnote -->
-        <div id="fullnote_output">
-            <div id="fullnote_title">
+        <div id="wrapper">
+            <div id="sidebar">
                 
             </div>
-            <div id="fullnote_tag" style="display: flex;">
+            <div id="content">
+                <div id="fullnote_output">
+                    <div id="fullnote_title">
+                
+                    </div>
+                    <div id="fullnote_tag" style="display: flex;">
 
-            </div>
-            <div id="fullnote_notes">
+                    </div>
+                    <div id="fullnote_notes">
 
+                    </div>
+                </div>                
             </div>
         </div>
-        <div style="display: inline-block;min-height: 250px;background-color: bisque;">            
+            <!-- fullnote -->
+
+        <div id="controls" style="display: inline-block;min-height: 250px;background-color: bisque;">            
             <div>
                 <!-- input new title -->
                 <label for="newtitle">New Title:</label><br>
@@ -65,7 +74,6 @@ body {background-color: powderblue;}
             }
 
             function update_title(){
-
                 fullnote_title.innerText = data_structure["fullnotes"]["01"]["title"];
             }
             
@@ -147,9 +155,9 @@ body {background-color: powderblue;}
             if (localStorage.getItem("data_structure") !== null){
                 
                 data_structure = JSON.parse(localStorage.getItem("data_structure"));
-                console.log("loading old state");
-                console.log(data_structure)
-                console.log(data_structure["fullnotes"])
+                // console.log("loading old state");
+                // console.log(data_structure)
+                // console.log(data_structure["fullnotes"])
             }
             console.log(localStorage);
             update_title();
