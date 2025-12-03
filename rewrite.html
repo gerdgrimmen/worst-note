@@ -61,7 +61,7 @@ body {background-color: powderblue;}
             var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {"01": {}}};
 
             function write_data_to_localStorage(){
-                localStorage.setItem("data_structure", data_structure);
+                localStorage.setItem("data_structure", JSON.stringify(data_structure));
             }
 
             function update_title(){
@@ -115,7 +115,6 @@ body {background-color: powderblue;}
                         new_div.classList.add("note");
                         new_div.innerText = value;
                         fullnote_notes.appendChild(new_div);
-                        // fullnote_notes["data-key-list"].push(key);
                         console.log(fullnote_notes);
                         break;
                     case "image":
@@ -123,13 +122,9 @@ body {background-color: powderblue;}
                         new_div.classList.add("image");
                         new_div.innerText = value;
                         fullnote_notes.appendChild(new_div);
-                        // fullnote_notes["data-key-list"].push(key);
                         console.log(fullnote_notes);
                         break;
                     case "tag":
-                        // if (fullnote_tag["data-key-list"].includes(key)){
-                        //     break;
-                        // }
                         if (data_structure["tags"].includes(key)){
                             break;
                         }
@@ -137,7 +132,6 @@ body {background-color: powderblue;}
                         new_div.classList.add("tag");
                         new_div.innerText = value;
                         fullnote_tag.appendChild(new_div);
-                        // fullnote_tag["data-key-list"].push(key);
                         console.log(fullnote_tag);
                         break;
                     default:
@@ -152,15 +146,15 @@ body {background-color: powderblue;}
             // localStorage.removeItem("data_structure");
             if (localStorage.getItem("data_structure") !== null){
                 
-                data_structure = localStorage.getItem("data_structure");
+                data_structure = JSON.parse(localStorage.getItem("data_structure"));
                 console.log("loading old state");
                 console.log(data_structure)
                 console.log(data_structure["fullnotes"])
             }
             console.log(localStorage);
-            // update_title();
-            // update_notes();
-            // update_tags();
+            update_title();
+            update_notes();
+            update_tags();
         </script>
     </html>
 </body>
