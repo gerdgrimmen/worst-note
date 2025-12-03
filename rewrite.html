@@ -5,6 +5,8 @@
 body {background-color: powderblue;}
 #taglist {background-color: cyan; min-width: 50px; min-height: 50px;}
 #notelist {background-color: yellow; min-width: 50px; min-height: 50px;}
+.tag {background-color: red; margin: 5px;}
+.note {background-color: blue; margin: 5px;}
         </style>
     </head>
     <body>
@@ -56,32 +58,35 @@ body {background-color: powderblue;}
             var fullnote_notes = document.getElementById("fullnote_notes");
             var fullnote_tag = document.getElementById("fullnote_tag");
 
-            var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {}};
+            var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {"01": {}}};
 
             function write_data_to_localStorage(){
                 localStorage.setItem("data_structure", data_structure);
             }
 
             function update_title(){
+
                 fullnote_title.innerText = data_structure["fullnotes"]["01"]["title"];
             }
-
+            
             function update_notes(){
+                fullnote_notes.innerHTML = ""
                 var count = 0;
                 data_structure["notes"].forEach(function(element){
                     fullnote_placement("note", count, element);
                     count = count + 1;
                 });
             }
-
+            
             function update_tags(){
+                fullnote_tag.innerHTML = ""
                 var count = 0;
                 data_structure["tags"].forEach(function(element){
                     fullnote_placement("tag", count, element);
                     count = count + 1;
                 });
             }
-
+            
             function add_title(){
                 data_structure["fullnotes"]["01"]["title"] = newtitle_input.value;
                 update_title()
@@ -89,16 +94,16 @@ body {background-color: powderblue;}
                 newtitle_input.value = "";
             }
             async function add_note(){
-                var length = data_structure["notes"].keys().length();
-                data_structure["notes"].append(newnote_input.value);
+                var length = data_structure["notes"].keys().length;
+                data_structure["notes"].push(newnote_input.value);
                 update_notes();
                 write_data_to_localStorage();
                 newnote_input.value = "";
             };
             async function add_tag(){
-                var length = data_structure["tags"].keys().length();
-                data_structure["tags"].append(newtag_input.value);
-                update_notes();
+                var length = data_structure["tags"].keys().length;
+                data_structure["tags"].push(newtag_input.value);
+                update_tags();
                 write_data_to_localStorage();
                 newtag_input.value = "";
             };
@@ -110,7 +115,7 @@ body {background-color: powderblue;}
                         new_div.classList.add("note");
                         new_div.innerText = value;
                         fullnote_notes.appendChild(new_div);
-                        fullnote_notes["data-key-list"].push(key);
+                        // fullnote_notes["data-key-list"].push(key);
                         console.log(fullnote_notes);
                         break;
                     case "image":
@@ -118,18 +123,21 @@ body {background-color: powderblue;}
                         new_div.classList.add("image");
                         new_div.innerText = value;
                         fullnote_notes.appendChild(new_div);
-                        fullnote_notes["data-key-list"].push(key);
+                        // fullnote_notes["data-key-list"].push(key);
                         console.log(fullnote_notes);
                         break;
                     case "tag":
-                        if (fullnote_tag["data-key-list"].includes(key)){
+                        // if (fullnote_tag["data-key-list"].includes(key)){
+                        //     break;
+                        // }
+                        if (data_structure["tags"].includes(key)){
                             break;
                         }
                         var new_div = document.createElement("div");
                         new_div.classList.add("tag");
                         new_div.innerText = value;
                         fullnote_tag.appendChild(new_div);
-                        fullnote_tag["data-key-list"].push(key);
+                        // fullnote_tag["data-key-list"].push(key);
                         console.log(fullnote_tag);
                         break;
                     default:
@@ -140,6 +148,19 @@ body {background-color: powderblue;}
             newtitle_button.addEventListener("click", add_title);
             newnote_button.addEventListener("click", add_note);
             newtag_button.addEventListener("click", add_tag);
+            
+            // localStorage.removeItem("data_structure");
+            if (localStorage.getItem("data_structure") !== null){
+                
+                data_structure = localStorage.getItem("data_structure");
+                console.log("loading old state");
+                console.log(data_structure)
+                console.log(data_structure["fullnotes"])
+            }
+            console.log(localStorage);
+            // update_title();
+            // update_notes();
+            // update_tags();
         </script>
     </html>
 </body>
