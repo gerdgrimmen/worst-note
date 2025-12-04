@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
         <style>
-body {background-color: powderblue;}
-#taglist {background-color: cyan; min-width: 50px; min-height: 50px;}
+            body {background-color: powderblue;}
+            #taglist {background-color: cyan; min-width: 50px; min-height: 50px;}
 #notelist {background-color: yellow; min-width: 50px; min-height: 50px;}
 
 #wrapper { display: grid; grid-template-columns: 5% 70% auto;}
@@ -13,7 +13,11 @@ body {background-color: powderblue;}
     <body>
         <div id="wrapper">
             <div id="sidebar">
+                <!-- button new tag -->
+                <div id="sitelist">
                 
+                </div>
+                <input type="button" value="Add Site" id="newsite_button"/>
             </div>
             <div id="content">
                 <div id="fullnote_output">
@@ -67,6 +71,9 @@ body {background-color: powderblue;}
             var fullnote_notes = document.getElementById("fullnote_notes");
             var fullnote_tag = document.getElementById("fullnote_tag");
 
+            var newsite_button = document.getElementById("newsite_button");
+            var sitelist = document.getElementById("sitelist");
+
             var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {"01": {}}};
 
             function write_data_to_localStorage(){
@@ -95,6 +102,15 @@ body {background-color: powderblue;}
                 });
             }
             
+            function update_sites(){
+                sitelist.innerHTML = ""
+                
+                Object.keys(data_json["fullnotes"]).forEach(function(key) {
+                    fullnote_placement("site", count, element);
+                    
+                });
+            }
+            
             function add_title(){
                 data_structure["fullnotes"]["01"]["title"] = newtitle_input.value;
                 update_title()
@@ -114,6 +130,12 @@ body {background-color: powderblue;}
                 update_tags();
                 write_data_to_localStorage();
                 newtag_input.value = "";
+            };
+            async function add_site(){
+                var length = data_structure["fullnotes"].keys().length;
+                data_structure["fullnotes"][length];
+                update_sites();
+                write_data_to_localStorage();
             };
             
             function fullnote_placement(type, key, value){
@@ -142,6 +164,8 @@ body {background-color: powderblue;}
                         fullnote_tag.appendChild(new_div);
                         console.log(fullnote_tag);
                         break;
+                    case "site":
+                        break;
                     default:
                         break;
                 }
@@ -150,8 +174,9 @@ body {background-color: powderblue;}
             newtitle_button.addEventListener("click", add_title);
             newnote_button.addEventListener("click", add_note);
             newtag_button.addEventListener("click", add_tag);
+            newsite_button.addEventListener("click", add_site);
             
-            // localStorage.removeItem("data_structure");
+            localStorage.removeItem("data_structure");
             if (localStorage.getItem("data_structure") !== null){
                 
                 data_structure = JSON.parse(localStorage.getItem("data_structure"));
