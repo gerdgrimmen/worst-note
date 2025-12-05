@@ -14,10 +14,10 @@
         <div id="wrapper">
             <div id="sidebar">
                 <!-- button new tag -->
-                <div id="sitelist">
+                <div id="pagelist">
                 
                 </div>
-                <input type="button" value="Add Site" id="newsite_button"/>
+                <input type="button" value="Add page" id="newpage_button"/>
             </div>
             <div id="content">
                 <div id="fullnote_output">
@@ -71,17 +71,22 @@
             var fullnote_notes = document.getElementById("fullnote_notes");
             var fullnote_tag = document.getElementById("fullnote_tag");
 
-            var newsite_button = document.getElementById("newsite_button");
-            var sitelist = document.getElementById("sitelist");
+            var newpage_button = document.getElementById("newpage_button");
+            var pagelist = document.getElementById("pagelist");
 
-            var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {"01": {}}};
+            var current_page = null;
+
+            var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {}};
 
             function write_data_to_localStorage(){
                 localStorage.setItem("data_structure", JSON.stringify(data_structure));
             }
 
             function update_title(){
-                fullnote_title.innerText = data_structure["fullnotes"]["01"]["title"];
+                if (current_page === null){
+                    return
+                }
+                fullnote_title.innerText = data_structure["fullnotes"][current_page]["title"];
             }
             
             function update_notes(){
@@ -102,17 +107,19 @@
                 });
             }
             
-            function update_sites(){
-                sitelist.innerHTML = ""
+            function update_pages(){
+                pagelist.innerHTML = "";
                 
-                Object.keys(data_json["fullnotes"]).forEach(function(key) {
-                    fullnote_placement("site", count, element);
-                    
+                Object.keys(data_structure["fullnotes"]).forEach(function(key) {
+                    fullnote_placement("page", key, key);
                 });
             }
             
             function add_title(){
-                data_structure["fullnotes"]["01"]["title"] = newtitle_input.value;
+                if (current_page === null){
+                    return
+                }
+                data_structure["fullnotes"][current_page]["title"] = newtitle_input.value;
                 update_title()
                 write_data_to_localStorage()
                 newtitle_input.value = "";
@@ -131,10 +138,10 @@
                 write_data_to_localStorage();
                 newtag_input.value = "";
             };
-            async function add_site(){
-                var length = data_structure["fullnotes"].keys().length;
-                data_structure["fullnotes"][length];
-                update_sites();
+            async function add_page(){
+                var length = Object.keys(data_structure["fullnotes"]).length;
+                data_structure["fullnotes"][length] = {};
+                update_pages();
                 write_data_to_localStorage();
             };
             
@@ -164,17 +171,36 @@
                         fullnote_tag.appendChild(new_div);
                         console.log(fullnote_tag);
                         break;
-                    case "site":
+                    case "page":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("page");
+                        new_div.innerText = value;
+                        new_div.addEventListener("click", function(e){
+                            // console.log(e.target.innerText);
+                            select_current_page(e);
+                        });
+                        pagelist.appendChild(new_div);
+                        console.log(pagelist);
                         break;
                     default:
                         break;
                 }
             }
+            function select_current_page(e){
+                // console.log(e);
+                current_page = e.target.innerText;
+                console.log(current_page);
+                update_title();
+                update_notes();
+                update_tags();
+                update_pages();    
+                // fullnote_placement(e.target["data-type"], e.target["data-key"], e.target.innerText)
+            }
 
             newtitle_button.addEventListener("click", add_title);
             newnote_button.addEventListener("click", add_note);
             newtag_button.addEventListener("click", add_tag);
-            newsite_button.addEventListener("click", add_site);
+            newpage_button.addEventListener("click", add_page);
             
             localStorage.removeItem("data_structure");
             if (localStorage.getItem("data_structure") !== null){
@@ -188,6 +214,7 @@
             update_title();
             update_notes();
             update_tags();
+            update_pages();
         </script>
     </html>
 </body>
