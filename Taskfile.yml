@@ -1,0 +1,27 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  BUILD_MESSAGE: Building Docker Image
+  RUN_MESSAGE: Running Docker Container
+  CLEAR_MESSAGE: Clearing Docker Container
+
+tasks:
+  build:
+    cmds:
+      - echo "{{.BUILD_MESSAGE}}"
+      - chmod +x ./container_build.sh
+      - bash ./container_build.sh
+    silent: true
+  run:
+    cmds:
+      - echo "{{.RUN_MESSAGE}}"
+      - podman run -d --name worsty -p 5000:5000 worst/worst-note:0.3.0
+    silent: true
+  clear:
+    cmds:
+      - echo "{{.CLEAR_MESSAGE}}"
+      - podman kill worsty
+      - podman rm worsty
+    silent: true
