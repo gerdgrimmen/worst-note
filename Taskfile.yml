@@ -6,6 +6,7 @@ vars:
   BUILD_MESSAGE: Building Docker Image
   RUN_MESSAGE: Running Docker Container
   CLEAR_MESSAGE: Clearing Docker Container
+  TEST_MESSAGE: Testing Service
 
 tasks:
   build:
@@ -23,5 +24,12 @@ tasks:
     cmds:
       - echo "{{.CLEAR_MESSAGE}}"
       - podman kill worsty
-      - podman rm worsty
+      - podman rm worsty   
+    silent: true
+  test:
+    cmds:
+      - echo "{{.CLEAR_MESSAGE}}"
+      - chmod +x ./test.sh
+      - bash ./test.sh
+      - echo $?
     silent: true
