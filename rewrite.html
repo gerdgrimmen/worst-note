@@ -101,7 +101,7 @@
             function update_tags(){
                 fullnote_tag.innerHTML = ""
                 var count = 0;
-                data_structure["tags"].forEach(function(element){
+                data_structure["fullnotes"][current_page]["tags"].forEach(function(element){
                     fullnote_placement("tag", count, element);
                     count = count + 1;
                 });
@@ -125,8 +125,8 @@
                 newtitle_input.value = "";
             }
             async function add_note(){
-                var length = data_structure["notes"].keys().length;
-                data_structure["notes"].push(newnote_input.value);
+                var length = data_structure["fullnotes"][current_page]["notes"].keys().length;
+                data_structure["fullnotes"][current_page]["notes"].push(newnote_input.value);
                 update_notes();
                 write_data_to_localStorage();
                 newnote_input.value = "";
