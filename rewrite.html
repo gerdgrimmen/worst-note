@@ -41,7 +41,7 @@
                 <label for="newtitle">New Title:</label><br>
                 <input type="text" name="newtitle" size="20" id="newtitle_input"/>
                 <!-- button new title -->
-                <input type="button" value="Add Note" id="newtitle_button"/>
+                <input type="button" value="Set Title" id="newtitle_button"/>
             </div>
             <div>
                 <!-- input new note -->
@@ -92,7 +92,7 @@
             function update_notes(){
                 fullnote_notes.innerHTML = ""
                 var count = 0;
-                data_structure["notes"].forEach(function(element){
+                data_structure["fullnotes"][current_page]["notes"].forEach(function(element){
                     fullnote_placement("note", count, element);
                     count = count + 1;
                 });
@@ -101,6 +101,7 @@
             function update_tags(){
                 fullnote_tag.innerHTML = ""
                 var count = 0;
+                console.log("herrrre");
                 data_structure["fullnotes"][current_page]["tags"].forEach(function(element){
                     fullnote_placement("tag", count, element);
                     count = count + 1;
@@ -127,20 +128,22 @@
             async function add_note(){
                 var length = data_structure["fullnotes"][current_page]["notes"].keys().length;
                 data_structure["fullnotes"][current_page]["notes"].push(newnote_input.value);
+                console.log(newnote_input.value);
+                console.log(data_structure["fullnotes"][current_page]["notes"]);
                 update_notes();
                 write_data_to_localStorage();
                 newnote_input.value = "";
             };
             async function add_tag(){
                 var length = data_structure["tags"].keys().length;
-                data_structure["tags"].push(newtag_input.value);
+                data_structure["fullnotes"][current_page]["tags"].push(newtag_input.value);
                 update_tags();
                 write_data_to_localStorage();
                 newtag_input.value = "";
             };
             async function add_page(){
                 var length = Object.keys(data_structure["fullnotes"]).length;
-                data_structure["fullnotes"][length] = {};
+                data_structure["fullnotes"][length] = {"tags": [], "notes":[], "title": "New Note"};
                 update_pages();
                 write_data_to_localStorage();
             };
@@ -202,7 +205,7 @@
             newtag_button.addEventListener("click", add_tag);
             newpage_button.addEventListener("click", add_page);
             
-            localStorage.removeItem("data_structure");
+            // localStorage.removeItem("data_structure");
             if (localStorage.getItem("data_structure") !== null){
                 
                 data_structure = JSON.parse(localStorage.getItem("data_structure"));
@@ -211,10 +214,10 @@
                 // console.log(data_structure["fullnotes"])
             }
             console.log(localStorage);
-            update_title();
-            update_notes();
-            update_tags();
-            update_pages();
+            // update_title();
+            // update_notes();
+            // update_tags();
+            // update_pages();
         </script>
     </html>
 </body>
