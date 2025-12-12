@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            body {background-color: powderblue;}
+            #taglist {background-color: cyan; min-width: 50px; min-height: 50px;}
+#notelist {background-color: yellow; min-width: 50px; min-height: 50px;}
+
+#wrapper { display: grid; grid-template-columns: 5% 70% auto;}
+#controls {position: absolute; bottom: 0px; left: 0px;}
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="sidebar">
+                <!-- button new tag -->
+                <div id="pagelist">
+                
+                </div>
+                <input type="button" value="Add page" id="newpage_button"/>
+            </div>
+            <div id="content">
+                <div id="fullnote_output">
+                    <div id="fullnote_title">
+                
+                    </div>
+                    <div id="fullnote_tag" style="display: flex;">
+
+                    </div>
+                    <div id="fullnote_notes">
+
+                    </div>
+                </div>                
+            </div>
+        </div>
+            <!-- fullnote -->
+
+        <div id="controls" style="display: inline-block;min-height: 250px;background-color: bisque;">            
+            <div>
+                <!-- input new title -->
+                <label for="newtitle">New Title:</label><br>
+                <input type="text" name="newtitle" size="20" id="newtitle_input"/>
+                <!-- button new title -->
+                <input type="button" value="Set Title" id="newtitle_button"/>
+            </div>
+            <div>
+                <!-- input new note -->
+                <label for="newnote">New Note:</label><br>
+                <textarea name="newnote" cols="40" rows="5" id="newnote_input"></textarea>
+                <!-- button new note -->
+                <input type="button" value="Add Note" id="newnote_button"/>
+            </div>
+            <div>
+                <!-- input new tag -->
+                <label for="newtag">New Tag:</label><br>
+                <input type="text" name="newtag" size="20" id="newtag_input"/>
+                <!-- button new tag -->
+                <input type="button" value="Add Tag" id="newtag_button"/>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var newtitle_input = document.getElementById("newtitle_input");
+            var newtitle_button = document.getElementById("newtitle_button");
+            var newnote_input = document.getElementById("newnote_input");
+            var newnote_button = document.getElementById("newnote_button");
+            var newtag_input = document.getElementById("newtag_input");
+            var newtag_button = document.getElementById("newtag_button");
+            
+            var fullnote_title = document.getElementById("fullnote_title");
+            var fullnote_notes = document.getElementById("fullnote_notes");
+            var fullnote_tag = document.getElementById("fullnote_tag");
+
+            var newpage_button = document.getElementById("newpage_button");
+            var pagelist = document.getElementById("pagelist");
+
+            var current_page = null;
+
+            var data_structure = {"notes": [], "tags": [], "images": {}, "fullnotes": {}};
+
+            function write_data_to_localStorage(){
+                localStorage.setItem("data_structure", JSON.stringify(data_structure));
+            }
+
+            function update_title(){
+                if (current_page === null){
+                    return
+                }
+                fullnote_title.innerText = data_structure["fullnotes"][current_page]["title"];
+            }
+            
+            function update_notes(){
+                fullnote_notes.innerHTML = ""
+                var count = 0;
+                data_structure["fullnotes"][current_page]["notes"].forEach(function(element){
+                    fullnote_placement("note", count, element);
+                    count = count + 1;
+                });
+            }
+            
+            function update_tags(){
+                fullnote_tag.innerHTML = ""
+                var count = 0;
+                console.log("herrrre");
+                data_structure["fullnotes"][current_page]["tags"].forEach(function(element){
+                    fullnote_placement("tag", count, element);
+                    count = count + 1;
+                });
+            }
+            
+            function update_pages(){
+                pagelist.innerHTML = "";
+                
+                Object.keys(data_structure["fullnotes"]).forEach(function(key) {
+                    fullnote_placement("page", key, key);
+                });
+            }
+            
+            function add_title(){
+                if (current_page === null){
+                    return
+                }
+                data_structure["fullnotes"][current_page]["title"] = newtitle_input.value;
+                update_title()
+                write_data_to_localStorage()
+                newtitle_input.value = "";
+            }
+            async function add_note(){
+                var length = data_structure["fullnotes"][current_page]["notes"].keys().length;
+                data_structure["fullnotes"][current_page]["notes"].push(newnote_input.value);
+                console.log(newnote_input.value);
+                console.log(data_structure["fullnotes"][current_page]["notes"]);
+                update_notes();
+                write_data_to_localStorage();
+                newnote_input.value = "";
+            };
+            async function add_tag(){
+                var length = data_structure["tags"].keys().length;
+                data_structure["fullnotes"][current_page]["tags"].push(newtag_input.value);
+                update_tags();
+                write_data_to_localStorage();
+                newtag_input.value = "";
+            };
+            async function add_page(){
+                var length = Object.keys(data_structure["fullnotes"]).length;
+                data_structure["fullnotes"][length] = {"tags": [], "notes":[], "title": "New Note"};
+                update_pages();
+                write_data_to_localStorage();
+            };
+            
+            function fullnote_placement(type, key, value){
+                switch(type){
+                    case "note":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("note");
+                        new_div.innerText = value;
+                        fullnote_notes.appendChild(new_div);
+                        console.log(fullnote_notes);
+                        break;
+                    case "image":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("image");
+                        new_div.innerText = value;
+                        fullnote_notes.appendChild(new_div);
+                        console.log(fullnote_notes);
+                        break;
+                    case "tag":
+                        if (data_structure["tags"].includes(key)){
+                            break;
+                        }
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("tag");
+                        new_div.innerText = value;
+                        fullnote_tag.appendChild(new_div);
+                        console.log(fullnote_tag);
+                        break;
+                    case "page":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("page");
+                        new_div.innerText = value;
+                        new_div.addEventListener("click", function(e){
+                            // console.log(e.target.innerText);
+                            select_current_page(e);
+                        });
+                        pagelist.appendChild(new_div);
+                        console.log(pagelist);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            function select_current_page(e){
+                // console.log(e);
+                current_page = e.target.innerText;
+                console.log(current_page);
+                update_title();
+                update_notes();
+                update_tags();
+                update_pages();    
+                // fullnote_placement(e.target["data-type"], e.target["data-key"], e.target.innerText)
+            }
+
+            newtitle_button.addEventListener("click", add_title);
+            newnote_button.addEventListener("click", add_note);
+            newtag_button.addEventListener("click", add_tag);
+            newpage_button.addEventListener("click", add_page);
+            
+            // localStorage.removeItem("data_structure");
+            if (localStorage.getItem("data_structure") !== null){
+                
+                data_structure = JSON.parse(localStorage.getItem("data_structure"));
+                // console.log("loading old state");
+                // console.log(data_structure)
+                // console.log(data_structure["fullnotes"])
+            }
+            console.log(localStorage);
+            // update_title();
+            // update_notes();
+            // update_tags();
+            // update_pages();
+        </script>
+    </html>
+</body>

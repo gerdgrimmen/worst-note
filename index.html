@@ -9,36 +9,51 @@ body {background-color: powderblue;}
     </head>
     <body>
         <!-- ids 
-        newnote_input newnote_button newtag_input newtag_button taglist notelist output newimage_input newimage_button 
+        newnote_input newnote_button newtag_input newtag_button taglist notelist output newimage_input newimage_button image_preview
+        fullnote_output
         -->
-        <div>
-            <!-- input new note -->
-            <label for="newnote">New Note:</label><br>
-            <textarea name="newnote" cols="40" rows="5" id="newnote_input"></textarea>
-            <!-- button new note -->
-            <input type="button" value="Add Note" id="newnote_button"/>
+        <div style="display: inline-block;min-height: 250px;background-color: bisque;">            
+            <div>
+                <!-- input new note -->
+                <label for="newnote">New Note:</label><br>
+                <textarea name="newnote" cols="40" rows="5" id="newnote_input"></textarea>
+                <!-- button new note -->
+                <input type="button" value="Add Note" id="newnote_button"/>
+            </div>
+            <div>
+                <!-- input new tag -->
+                <label for="newtag">New Tag:</label><br>
+                <input type="text" name="newtag" size="20" id="newtag_input"/>
+                <!-- button new tag -->
+                <input type="button" value="Add Tag" id="newtag_button"/>
+            </div>
+            <div>
+                <!-- input new image -->
+                <label for="newimage">New Image:</label><br>
+                <input type="file" accept="image/*" name="newimage" id="newimage_input"/>
+                <!-- button new image -->
+                <input type="button" value="Add Tag" id="newimage_button"/>
+            </div>
         </div>
-        <div>
-            <!-- input new tag -->
-            <label for="newtag">New Tag:</label><br>
-            <input type="text" name="newtag" size="20" id="newtag_input"/>
-            <!-- button new tag -->
-            <input type="button" value="Add Tag" id="newtag_button"/>
-        </div>
-        <div>
-            <!-- input new image -->
-            <label for="newimage">New Image:</label><br>
-            <input type="file" accept="image/*" name="newimage" id="newimage_input"/>
-            <!-- button new image -->
-            <input type="button" value="Add Tag" id="newimage_button"/>
-        </div>
+        <div style="display: inline-block;min-width: 300px;background-color: blueviolet;min-height: 250px;vertical-align: top;">
+            <div id="fullnote_notes">
 
+            </div>
+            <div id="fullnote_tag">
+
+            </div>
+        </div>
         <!-- last uploaded image -->
         <img id="image_preview">
         <!-- tag list -->
         <div id="taglist"></div>
         <!-- note list -->
         <div id="notelist"></div>
+
+        <!-- fullnote -->
+        <div id="fullnote_output"></div>
+
+
 
         <script type="text/javascript">
             console.log("yay")
@@ -65,6 +80,11 @@ body {background-color: powderblue;}
             var image_preview = document.getElementById('image_preview');
             var image_upload_buffer = null;
 
+            var fullnote_notes = document.getElementById("fullnote_notes");
+            var fullnote_tag = document.getElementById("fullnote_tag");
+
+            var data_structure = {"notes": {}, "tags": {}, "images": {}, "fullnotes": {}};
+
             function reset_notelist(){
                 notelist.innerText = "";
             };
@@ -77,16 +97,28 @@ body {background-color: powderblue;}
                 reset_notelist();
                 Object.keys(data_json["notes"]).forEach(function(key) {
                     console.log(key + ": " + data_json["notes"][key]);
+                    var new_div = document.createElement("div");
+                    new_div.innerText = data_json["notes"][key];
+                    new_div["data-key"] = key;
+                    new_div["data-type"] = "note";
+                    new_div.className = "note";
+                    new_div.addEventListener("click", show_element_contents);
+                    notelist.appendChild(new_div);
                 });
-                notelist.innerText = JSON.stringify(data_json);
             };
- 
+            
             function layout_tags_data(data_json){
                 reset_taglist();
-                 Object.keys(data_json["tags"]).forEach(function(key) {
+                Object.keys(data_json["tags"]).forEach(function(key) {
                     console.log(key + ": " + data_json["tags"][key]);
+                    var new_div = document.createElement("div");
+                    new_div.innerText = data_json["tags"][key];
+                    new_div["data-key"] = key;
+                    new_div["data-type"] = "tag";
+                    new_div.classList.add("tag");
+                    new_div.addEventListener("click", show_element_contents);
+                    taglist.appendChild(new_div);
                 });
-                taglist.innerText = JSON.stringify(data_json);
             };
  
             async function update_notelist(){
@@ -95,7 +127,6 @@ body {background-color: powderblue;}
                 .then(function(response) {
                     return response.json();
                 }).then(function(data) {
-                    // console.log(data);
                     layout_notes_data(data);
                 });
             };
@@ -105,7 +136,6 @@ body {background-color: powderblue;}
                 .then(function(response) {
                     return response.json();
                 }).then(function(data) {
-                    // console.log(data);
                     layout_tags_data(data);
                 });
             };
@@ -121,7 +151,6 @@ body {background-color: powderblue;}
                     update_notelist();
                 });
             };
-
             async function add_tag(){
                 // post
                 var post_body = {"text": newtag_input.value};
@@ -151,12 +180,56 @@ body {background-color: powderblue;}
                 image_preview.onload = function() { URL.revokeObjectURL(image_preview.src); };
             };
 
+            function show_element_contents(e){
+                console.log(e);
+                console.log(e.target["data-key"]);
+                console.log(e.target["data-type"]);
+                fullnote_placement(e.target["data-type"], e.target["data-key"], e.target.innerText)
+            }
+            
+            function fullnote_placement(type, key, value){
+                switch(type){
+                    case "note":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("note");
+                        new_div.innerText = value;
+                        fullnote_notes.appendChild(new_div);
+                        fullnote_notes["data-key-list"].push(key);
+                        console.log(fullnote_notes);
+                        break;
+                    case "image":
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("image");
+                        new_div.innerText = value;
+                        fullnote_notes.appendChild(new_div);
+                        fullnote_notes["data-key-list"].push(key);
+                        console.log(fullnote_notes);
+                        break;
+                    case "tag":
+                        if (fullnote_tag["data-key-list"].includes(key)){
+                            break;
+                        }
+                        var new_div = document.createElement("div");
+                        new_div.classList.add("tag");
+                        new_div.innerText = value;
+                        fullnote_tag.appendChild(new_div);
+                        fullnote_tag["data-key-list"].push(key);
+                        console.log(fullnote_tag);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             newnote_button.addEventListener("click", add_note);
             newtag_button.addEventListener("click", add_tag);
             newimage_button.addEventListener("click", add_image);
 
             newimage_input.addEventListener("change", upload_image);
-
+            fullnote_notes["data-key-list"] = [];
+            console.log(fullnote_notes["data-key-list"]);
+            fullnote_tag["data-key-list"] = [];
+            console.log(fullnote_tag["data-key-list"]);
             update_notelist();
             update_taglist();
         </script>

@@ -6,12 +6,15 @@ from urllib.parse import urlparse, parse_qs
 api_data = {
     "tags": {},
     "notes": {},
-    "images": {}
+    "images": {},
+    "fullnotes": {}
 }
 
 filename = "api_data.json"
 
 index_content = "Nothing Here!"
+
+rewrite_content = "Nothing Here! rewrite"
 
 PORT = 5000
 
@@ -25,6 +28,12 @@ def load_index():
             return index_file.read()
     return index_content
 
+def load_rewrite():
+    if os.path.isfile("rewrite.html"):
+        with open("rewrite.html", "r") as rewrite_file:
+            return rewrite_file.read()
+    return rewrite_content
+
 
 def initial_persistence_setup():
     if os.path.isfile(filename):
@@ -32,7 +41,7 @@ def initial_persistence_setup():
             return json.loads(data_file.read())
     else:
         write_data()
-        return {"tags": {}, "notes": {}, "images": {}}        
+        return {"tags": {}, "notes": {}, "images": {}, "fullnotes": {}}        
 
 class API():
     def __init__(self):
@@ -77,6 +86,10 @@ def get_help(args):
 @api.get("/worst")
 def get_worse(args):
     return index_content
+
+@api.get("/rewrite")
+def get_worse(args):
+    return rewrite_content
 
 @api.get("/tags")
 def get_tags(args):
@@ -149,6 +162,40 @@ def post_image(body):
     api_data["images"][str(next_id)] = uploaded_image_name
     write_data()
     return {"id": str(next_id)}
+
+# fullnote structure {id, notes/images-list, tagslist}
+# have to get the /<id> endpoint from worst-auth so i can separate this endpoints functions
+@api.get("/fullnotes")
+def get_fullnotes(args):
+    if "path_id" in args.keys():
+        if args["path_id"] in api_data["fullnotes"].keys():
+            return api_data["fullnotes"][args["path_id"]]
+        else:
+            return {"message": "not found"}
+    return {"fullnotes": api_data["fullnotes"]}
+
+# have to get the /<id> endpoint from worst-auth so i can separate this endpoints functions
+@api.post("/fullnotes")
+def post_fullnotes(args):
+    if not "text" in body.keys():
+        return {"message": "invalid entry"}
+    next_id = len(api_data["fullnotes"].keys())
+    api_data["fullnotes"][str(next_id)] = body["text"]
+    write_data()
+    return {"id": str(next_id)}
+
+@api.post("/fullnotes_update")
+def post_fullnotes(body):
+    if "id" in body.keys():
+        if body["id"] in api_data["fullnotes"].keys():
+            api_data["fullnotes"][body["id"]] = body
+            return {"message: fullnote updated"}
+        else:
+            return {"message": "id not found"}
+    return {"message": "id not given"}
+
+
+
 
 if __name__ == "__main__":
     class ApiRequestHandler(BaseHTTPRequestHandler):
@@ -236,6 +283,7 @@ if __name__ == "__main__":
 
     api_data = initial_persistence_setup()
     index_content = load_index()
+    rewrite_content = load_rewrite()
     httpd = HTTPServer(('', PORT), ApiRequestHandler)
     print(f"Application started at http://127.0.0.1:{PORT}/")
     httpd.serve_forever()
