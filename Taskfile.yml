@@ -2,11 +2,13 @@
 
 version: '3'
 
+dotenv: ['.env', '{{.ENV}}/.env', '{{.HOME}}/.env']
+
 vars:
-  BUILD_MESSAGE: Building Docker Image
-  RUN_MESSAGE: Running Docker Container
-  CLEAR_MESSAGE: Clearing Docker Container
-  TEST_MESSAGE: Testing Service
+  BUILD_MESSAGE: Building Docker Image - Version $VERSION
+  RUN_MESSAGE: Running Docker Container - Version $VERSION
+  CLEAR_MESSAGE: Clearing Docker Container - Version $VERSION
+  TEST_MESSAGE: Testing Service - Version $VERSION
 
 tasks:
   build:
