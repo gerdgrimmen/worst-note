@@ -7,6 +7,7 @@ dotenv: ['.env', '{{.ENV}}/.env', '{{.HOME}}/.env']
 vars:
   BUILD_MESSAGE: Building Docker Image - Version $VERSION
   RUN_MESSAGE: Running Docker Container - Version $VERSION
+  RUN_PROJECT_MESSAGE: Running Project - Version $VERSION
   CLEAR_MESSAGE: Clearing Docker Container - Version $VERSION
   TEST_MESSAGE: Testing Service - Version $VERSION
 
@@ -34,4 +35,9 @@ tasks:
       - chmod +x ./test.sh
       - bash ./test.sh
       - echo $?
+    silent: true
+  run_project:
+    cmds:
+      - echo "{{.RUN_PROJECT_MESSAGE}}"
+      - python ./main.py
     silent: true
